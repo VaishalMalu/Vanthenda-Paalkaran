@@ -1,68 +1,69 @@
-# Vanthenda Paalkaran
+﻿# Vanthenda Paalkaran
 
 ## Overview
 
-Vanthenda Paalkaran is a production-grade, offline-first dairy subscription management platform designed to replace traditional handwritten milk cards with a modern digital ecosystem.
+Vanthenda Paalkaran is a premium subscription delivery management platform built for dairy vendors and subscription-based businesses. It digitizes traditional paper-based milk cards and delivers an offline-capable business workflow for customer management, delivery operations, billing, payments, analytics, and staff coordination.
 
-The application supports independent milk vendors, dairy distributors, and subscription delivery businesses by providing customer management, delivery tracking, billing, payment processing, analytics, and business automation in a single integrated solution.
+## Value Proposition
 
-## Vision
+This application is designed for independent vendors, distributors, and field staff who need a reliable system to manage daily recurring deliveries with minimal disruption. It replaces manual recording, reduces reconciliation errors, improves customer transparency, and provides the operational intelligence required for scalable growth.
 
-To become the operating system for subscription delivery businesses by digitizing and automating recurring daily deliveries.
+## Product Scope
 
-Initial focus:
-- Milk delivery
+- Digital milk card management for morning, evening, and extra deliveries.
+- Customer creation, address management, and subscription scheduling.
+- Automatic monthly billing, invoice generation, and PDF export.
+- Online payment support and collection tracking.
+- Vacation mode and emergency request handling.
+- Offline-first operation with background synchronization.
+- Business analytics and delivery reporting.
 
-Future expansion:
-- Water can delivery
-- Newspaper delivery
-- Grocery subscription
-- Tiffin services
-- Laundry pickup
-- Gas cylinder distribution
+## Architecture
 
-## Problem Statement
+Vanthenda Paalkaran follows a feature-first, clean architecture model that separates concerns and supports long-term maintainability.
 
-Most local milk vendors still depend on handwritten milk cards and notebooks to record daily deliveries, which leads to operational challenges such as:
+### Architectural principles
 
-- Manual entry errors
-- Lost customer records
-- Inaccurate monthly calculations
-- Payment disputes
-- No delivery history
-- No analytics or business insights
-- Lack of digital transparency
+- Feature-first module organization for high cohesion and low coupling.
+- Clean architecture boundaries between presentation, domain, and data layers.
+- Repository pattern for abstracting data sources.
+- Dependency injection for service composition and testability.
+- SOLID design principles to improve extensibility and stability.
+- Offline-first user experience with local persistence and sync reconciliation.
 
-Vanthenda Paalkaran transforms these processes into a reliable and scalable digital solution.
+### Core layers
 
-## Core Objectives
+- `lib/core`: Shared infrastructure, theme, routing, storage, and services.
+- `lib/features`: Domain features organized by business capability.
+- `lib/features/<feature>/data`: Data sources, models, repositories.
+- `lib/features/<feature>/presentation`: UI, providers, screens, and widgets.
+- `lib/features/<feature>/domain`: Business rules, use cases, and services.
 
-- Replace traditional paper milk cards
-- Simplify customer management
-- Automate monthly billing
-- Enable offline operations
-- Improve payment collection
-- Provide business analytics
-- Increase transparency between vendors and customers
+## Repository Structure
 
-## Target Users
+Maintain a clean repository structure to support fast onboarding and scalable development. The following structure is the target for this project:
 
-### Vendors
-- Independent milk vendors
-- Local dairy suppliers
-- Subscription delivery businesses
-- Milk distributors
+- `/android` - Android platform configuration and native resources.
+- `/ios` - iOS platform configuration and native resources.
+- `/linux` - Linux desktop support and CMake configuration.
+- `/macos` - macOS desktop support.
+- `/windows` - Windows desktop support.
+- `/web` - Web deployment assets and configuration.
+- `/lib` - Dart application source code.
+- `/assets` - Static assets such as images and fonts.
+- `/test` - Unit, widget, and integration tests.
+- `pubspec.yaml` - Dart package and dependency manifest.
+- `.gitignore` - Git ignore rules.
+- `README.md` - Project documentation.
+- `supabase_schema.sql` and other migration scripts.
 
-### Customers
-- Residential customers
-- Apartment associations
-- Commercial customers
-- Subscription consumers
+## Repository Maintenance Guidelines
 
-### Staff
-- Delivery executives
-- Collection staff
-- Business managers
+- Keep secrets out of source control: use `.env` and ignore all private key files.
+- Commit only application code, configuration templates, and necessary metadata.
+- Use descriptive commit messages and avoid large unrelated changes in a single commit.
+- Keep generated files and build artifacts excluded via `.gitignore`.
+- Keep the repository organized by feature and avoid mixing unrelated concerns in the same directory.
 
 ## Technology Stack
 
@@ -79,11 +80,11 @@ Vanthenda Paalkaran transforms these processes into a reliable and scalable digi
 - Supabase Storage
 - Realtime sync
 
-### Local Storage
+### Local Persistence
 - Hive
 - Shared Preferences
 
-### Notifications
+### Notifications and Analytics
 - Firebase Cloud Messaging
 - Firebase Analytics
 - Firebase Crashlytics
@@ -92,255 +93,59 @@ Vanthenda Paalkaran transforms these processes into a reliable and scalable digi
 - Razorpay
 - UPI
 
-### PDF
-- pdf
-- printing
+### PDF and Documents
+- `pdf` package
+- `printing` package
 
 ### Maps
 - Google Maps API
-
-## Architecture
-
-Vanthenda Paalkaran is implemented with a feature-first architecture and clean design principles to support maintainability and scalability.
-
-Key architectural characteristics:
-
-- Feature-first module organization
-- Clean architecture boundaries
-- Repository pattern for data access
-- SOLID design principles
-- Dependency injection for decoupled services
-- Modular design for incremental growth
-
-## User Roles
-
-### Vendor
-- Business management
-- Customer management
-- Delivery management
-- Billing
-- Payments
-- Analytics
-- Reports
-
-### Customer
-- Milk card tracking
-- Delivery history
-- Bill records
-- Payment history
-- Vacation requests
-- Emergency requests
-- Profile management
-
-### Staff
-- Delivery route management
-- Customer list management
-- Delivery status updates
-- Task tracking
-
-## Core Modules
-
-### Authentication
-- Secure login
-- Session management
-- Role-based navigation
-- Persistent authentication
-
-### Vendor Management
-- Business profile management
-- Logo upload
-- Business settings
-- Invoice branding
-- Payment configuration
-
-### Customer Management
-- Add, edit, delete customers
-- Search and group customers
-- Address and contact management
-
-### Milk Types
-- Cow milk
-- Buffalo milk
-- A2 milk
-- Organic milk
-- Custom milk products
-- Dynamic pricing
-
-### Digital Milk Card
-- Morning and evening delivery tracking
-- Extra delivery support
-- Monthly calendar view
-- Historical delivery records
-
-### Delivery Management
-- Single and bulk delivery updates
-- Skip delivery
-- Pause delivery
-- Delivery history
-
-### Billing
-- Automated monthly billing
-- Invoice generation
-- PDF export
-- Bill sharing
-- Outstanding balance tracking
-
-### Payments
-- Payment tracking
-- Collection reporting
-- Payment history
-- Online payment processing
-
-### Vacation Management
-- Pause and resume service
-- Date-based delivery suspension
-- Automatic vacation handling
-
-### Emergency Requests
-- Extra milk requests
-- Urgent delivery support
-- Vendor notification workflows
-- Status tracking
-
-### Notifications
-- Bill reminders
-- Delivery notifications
-- Payment reminders
-- Emergency alerts
-
-### Analytics
-- Daily revenue reports
-- Monthly revenue reports
-- Milk sales tracking
-- Top customer identification
-- Pending payment monitoring
-- Growth analytics
-
-### Offline Mode
-- Offline customer creation
-- Offline delivery entry
-- Offline billing
-- Background synchronization
-- Conflict resolution
-
-## Design Principles
-
-- Minimal and professional design
-- Human-centered experience
-- Premium visual quality
-- Responsive and accessible layouts
-- Offline-first behavior
-- Mobile-first interaction
-- Tamil-first localization support
-- Tablet and desktop compatibility
-
-## UI Standards
-
-- Material 3 design system
-- Light theme support
-- Professional typography
-- Consistent spacing
-- Large touch targets
-- Smooth animations
-- Responsive layouts
-- No unnecessary visual clutter
-
-## Security
-
-- Supabase Authentication
-- Row Level Security
-- Input validation
-- Secure local storage
-- Session management
-- Protected API access
-- Role-based authorization
-
-## Database Model
-
-Primary tables:
-- vendors
-- customers
-- milk_types
-- deliveries
-- payments
-- vacation_requests
-- emergency_requests
-- notifications
-- vendor_settings
-- audit_logs
-- invoice_templates
-- analytics_snapshots
-
-## Storage Buckets
-
-- vendor-logos
-- invoices
-- customer-files
-
-## Performance Goals
-
-- Application startup under 2 seconds
-- Smooth 60 FPS animations
-- Reliable offline functionality
-- Fast synchronization
-- Optimized API calls
-- Efficient database queries
-- Low battery consumption
-- Low memory usage
-
-## Testing
-
-- Unit testing
-- Widget testing
-- Integration testing
-- Offline testing
-- Performance testing
-- Security testing
-- Edge case testing
-
-## Scalability
-
-Built to support:
-- Single vendors
-- Multi-location businesses
-- Large dairy operations
-- Enterprise deployments
-- Multi-city expansion
-- White-label distribution
-
-## Future Roadmap
-
-- AI voice entry
-- Demand forecasting
-- Route optimization
-- WhatsApp integration
-- Delivery tracking
-- Customer loyalty programs
-- Inventory management
-- Staff attendance
-- Multi-branch support
-- Advanced business intelligence
 
 ## Deployment Targets
 
 - Android
 - iOS
 - Web
-- Tablet
-- Desktop
+- Desktop (Windows, macOS, Linux)
 
-## Development Standards
+## Setup and Development
 
-- Production-ready implementations
-- No placeholder logic
-- No incomplete modules
-- Complete documentation
-- Reusable and modular components
-- Enterprise-grade code quality
-- Consistent coding standards
-- Comprehensive error handling
-- Maintainable codebase
+### Prerequisites
+
+- Flutter SDK installed and configured
+- Dart SDK compatible with Flutter version
+- Supabase project and credentials
+- Firebase project for notifications and analytics
+
+### Setup steps
+
+1. Clone the repository.
+2. Create a local `.env` file with environment-specific credentials.
+3. Run `flutter pub get`.
+4. Run code generation if required:
+   - `dart run build_runner build --delete-conflicting-outputs`
+5. Run the app with `flutter run` or use a supported device target.
+
+## Environment and Secrets
+
+- Do not commit `.env` files or any secret key files.
+- Use `.gitignore` for all local configuration and private credential files.
+- Provide configuration templates if needed, but keep actual secrets local.
+
+## Quality and Stability
+
+- Prioritize maintainable code and consistent architecture.
+- Keep UI and business logic separated.
+- Prefer incremental improvements over large structural rewrites.
+- Validate critical paths with tests before merging.
+
+## Recommended Repository Practices
+
+- Maintain a stable `main` branch for releases.
+- Use feature branches for new work.
+- Review pull requests for architecture alignment and code quality.
+- Keep merge commits small and focused.
+- Document major architectural decisions in the repository.
 
 ## Project Goal
 
-Deliver the most trusted and user-friendly subscription delivery management platform that preserves traditional workflows while providing modern automation, transparency, and scalability for vendors and customers.
+Deliver an enterprise-grade subscription delivery platform that modernizes traditional workflows, supports offline operation, and provides a scalable foundation for future service expansion.
