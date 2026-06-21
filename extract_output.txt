@@ -1,0 +1,204 @@
+﻿
+============================================================
+FILE: core\routing\app_router.dart
+  Is wrapped: True, Truncated bytes: 1000
+  Available content length: 2002 chars
+  Last 100 chars of available: 'uilder: (context, state) => const CustomersListScreen(),\n      ),\n      GoRoute(\n        path: App\r\n'
+
+============================================================
+FILE: core\theme\app_theme.dart
+  Is wrapped: True, Truncated bytes: 3338
+  Available content length: 1997 chars
+  Last 100 chars of available: 'yle: ElevatedButton.styleFrom(\n          backgroundColor: AppColors.primary,\n          foregroundC\r\n'
+
+============================================================
+FILE: core\theme\app_typography.dart
+  Is wrapped: True, Truncated bytes: 379
+  Available content length: 1983 chars
+  Last 100 chars of available: '\n          fontWeight: FontWeight.w600,\n          color: AppColors.primary,\n        ),\n        lab\r\n'
+
+============================================================
+FILE: features\analytics\domain\demand_forecasting_service.dart
+  Is wrapped: True, Truncated bytes: 1780
+  Available content length: 1989 chars
+  Last 100 chars of available: "btract(Duration(days: i + 1));\n      final key = '${day.year}-${day.month.toString().padLeft(2,'0'\r\n"
+
+============================================================
+FILE: features\analytics\presentation\screens\ai_assistant_screen.dart
+  Is wrapped: True, Truncated bytes: 18057
+  Available content length: 1646 chars
+  Last 100 chars of available: ".';\n      } catch (e) {\n        return 'I could not fetch pending payments. Please check your conn\r\n"
+
+============================================================
+FILE: features\analytics\presentation\screens\analytics_screen.dart
+  Is wrapped: True, Truncated bytes: 11783
+  Available content length: 1994 chars
+  Last 100 chars of available: "q('is_active', true),\n  ]);\n\n  final todayDeliveries = results[0] as List;\n  final monthDeliveries\r\n"
+
+============================================================
+FILE: features\analytics\presentation\screens\demand_forecast_screen.dart
+  Is wrapped: True, Truncated bytes: 8961
+  Available content length: 1998 chars
+  Last 100 chars of available: "ref.invalidate(demandForecastProvider),\n                  child: const Text('Retry'),\n            \r\n"
+
+============================================================
+FILE: features\auth\presentation\providers\auth_provider.dart
+  Is wrapped: True, Truncated bytes: 577
+  Available content length: 1979 chars
+  Last 100 chars of available: ') {\n      state = AsyncError(e, StackTrace.current);\n    }\n  }\n\n  /// Determines the correct route\r\n'
+
+============================================================
+FILE: features\auth\presentation\screens\login_screen.dart
+  Is wrapped: True, Truncated bytes: 11547
+  Available content length: 1989 chars
+  Last 100 chars of available: 'context) {\n    final authState = ref.watch(authNotifierProvider);\n    final isLoading = authState.\r\n'
+
+============================================================
+FILE: features\auth\presentation\screens\splash_screen.dart
+  Is wrapped: True, Truncated bytes: 761
+  Available content length: 1986 chars
+  Last 100 chars of available: ",\n            Text(\n              'Vanthenda Paalkaran',\n              style: AppTypography.textTh\r\n"
+
+============================================================
+FILE: features\billing\data\repositories\billing_repository.dart
+  Is wrapped: True, Truncated bytes: 2006
+  Available content length: 1986 chars
+  Last 100 chars of available: " await _client\n        .from('bills')\n        .select()\n        .eq('billing_month', now.month)\n  \r\n"
+
+============================================================
+FILE: features\billing\presentation\screens\billing_dashboard_screen.dart
+  Is wrapped: True, Truncated bytes: 9751
+  Available content length: 1994 chars
+  Last 100 chars of available: '      crossAxisAlignment: CrossAxisAlignment.start,\n                children: [\n                  \r\n'
+
+============================================================
+FILE: features\billing\utils\pdf_invoice_generator.dart
+  Is wrapped: True, Truncated bytes: 10581
+  Available content length: 1884 chars
+  Last 100 chars of available: 'nAxisAlignment: pw.MainAxisAlignment.spaceBetween,\n                  children: [\n                 \r\n'
+
+============================================================
+FILE: features\customer\data\repositories\customer_repository.dart
+  Is wrapped: True, Truncated bytes: 1497
+  Available content length: 1985 chars
+  Last 100 chars of available: 'pository(CustomerRepositoryRef ref) =>\n    CustomerRepository();\n\nclass CustomerRepository {\n  fin\r\n'
+
+============================================================
+FILE: features\customer\presentation\screens\customers_list_screen.dart
+  Is wrapped: True, Truncated bytes: 10417
+  Available content length: 1989 chars
+  Last 100 chars of available: '                     )\n                    ]\n                  : null,\n              onChanged: (q\r\n'
+
+============================================================
+FILE: features\customer_portal\presentation\screens\customer_bills_screen.dart
+  Is wrapped: True, Truncated bytes: 7541
+  Available content length: 1791 chars
+  Last 100 chars of available: "ls')\n      .select()\n      .eq('customer_id', customerId)\n      .order('billing_year', ascending: \r\n"
+
+============================================================
+FILE: features\customer_portal\presentation\screens\customer_home_screen.dart
+  Is wrapped: True, Truncated bytes: 2060
+  Available content length: 1995 chars
+  Last 100 chars of available: 'pha: 0.06),\n            blurRadius: 20,\n            offset: const Offset(0, -4),\n          ),\n    \r\n'
+
+============================================================
+FILE: features\customer_portal\presentation\screens\customer_milk_card_screen.dart
+  Is wrapped: True, Truncated bytes: 11008
+  Available content length: 1787 chars
+  Last 100 chars of available: 'tomerMilkCardScreenState\n    extends ConsumerState<CustomerMilkCardScreen> {\n  late DateTime _curr\r\n'
+
+============================================================
+FILE: features\customer_portal\presentation\screens\customer_profile_screen.dart
+  Is wrapped: True, Truncated bytes: 5946
+  Available content length: 1990 chars
+  Last 100 chars of available: "      child: const Text('Logout'),\n          ),\n        ],\n      ),\n    );\n    if (confirm == true\r\n"
+
+============================================================
+FILE: features\customer_portal\presentation\screens\customer_requests_screen.dart
+  Is wrapped: True, Truncated bytes: 12796
+  Available content length: 1875 chars
+  Last 100 chars of available: 'ol _isSubmitting = false;\n  List<Map<String, dynamic>> _requests = [];\n  bool _loading = true;\n\n  \r\n'
+
+============================================================
+FILE: features\dashboard\presentation\screens\dashboard_screen.dart
+  Is wrapped: True, Truncated bytes: 14003
+  Available content length: 1992 chars
+  Last 100 chars of available: ' slivers: [\n              SliverPadding(\n                padding: const EdgeInsets.symmetric(horiz\r\n'
+
+============================================================
+FILE: features\dashboard\presentation\widgets\stat_card.dart
+  Is wrapped: True, Truncated bytes: 210
+  Available content length: 1980 chars
+  Last 100 chars of available: 'ubtitle != null) ...[\n            const SizedBox(height: 4),\n            Text(\n              subti\r\n'
+
+============================================================
+FILE: features\delivery\data\repositories\delivery_repository.dart
+  Is wrapped: True, Truncated bytes: 2647
+  Available content length: 1989 chars
+  Last 100 chars of available: "nt,\n        'is_delivered': isDelivered,\n        'is_extra_milk': isExtraMilk,\n      };\n}\n\n@riverp\r\n"
+
+============================================================
+FILE: features\delivery\presentation\screens\delivery_routes_screen.dart
+  Is wrapped: True, Truncated bytes: 6444
+  Available content length: 1993 chars
+  Last 100 chars of available: "eliveryNotifierProvider.notifier).loadTodaysDeliveries(),\n                child: const Text('Retry\r\n"
+
+============================================================
+FILE: features\emergency\presentation\screens\emergency_requests_screen.dart
+  Is wrapped: True, Truncated bytes: 10066
+  Available content length: 1989 chars
+  Last 100 chars of available: " customers(name)')\n          .eq('vendor_id', vendorId)\n          .order('request_date', ascending\r\n"
+
+============================================================
+FILE: features\milk_card\presentation\screens\milk_card_screen.dart
+  Is wrapped: True, Truncated bytes: 22977
+  Available content length: 1992 chars
+  Last 100 chars of available: '    if (next.isBefore(DateTime.now().add(const Duration(days: 31)))) {\n      setState(() => _curre\r\n'
+
+============================================================
+FILE: features\milk_types\presentation\screens\milk_types_screen.dart
+  Is wrapped: True, Truncated bytes: 11061
+  Available content length: 1717 chars
+  Last 100 chars of available: "id');\n      if (vendorId == null) { state = const AsyncData([]); return; }\n\n      final res = awai\r\n"
+
+============================================================
+FILE: features\payments\presentation\screens\payments_screen.dart
+  Is wrapped: True, Truncated bytes: 4581
+  Available content length: 1999 chars
+  Last 100 chars of available: '           ),\n              loading: () => const CircularProgressIndicator(color: AppColors.surfac\r\n'
+
+============================================================
+FILE: features\settings\presentation\screens\settings_screen.dart
+  Is wrapped: True, Truncated bytes: 9116
+  Available content length: 1992 chars
+  Last 100 chars of available: '    ],\n      ),\n    );\n    if (confirm == true) {\n      await SupabaseService.auth.signOut();\n    \r\n'
+
+============================================================
+FILE: features\staff\data\repositories\staff_repository.dart
+  Is wrapped: True, Truncated bytes: 591
+  Available content length: 1976 chars
+  Last 100 chars of available: "get_vendor_id');\n      if (vendorId != null) {\n        staffJson['vendor_id'] = vendorId;\n      }\n\r\n"
+
+============================================================
+FILE: features\staff\presentation\screens\staff_list_screen.dart
+  Is wrapped: True, Truncated bytes: 4738
+  Available content length: 1996 chars
+  Last 100 chars of available: '             backgroundColor: AppColors.primary.withValues(alpha: 0.1),\n                    child:\r\n'
+
+============================================================
+FILE: features\staff_portal\presentation\screens\staff_home_screen.dart
+  Is wrapped: True, Truncated bytes: 8375
+  Available content length: 1992 chars
+  Last 100 chars of available: '      automaticallyImplyLeading: false,\n        title: Column(\n          crossAxisAlignment: Cross\r\n'
+
+============================================================
+FILE: features\vacation\presentation\screens\vacation_mode_screen.dart
+  Is wrapped: True, Truncated bytes: 9665
+  Available content length: 1989 chars
+  Last 100 chars of available: "te', ascending: false);\n\n      state = AsyncData((res as List).map((e) => VacationRequest.fromJson\r\n"
+
+============================================================
+FILE: features\vendor\presentation\screens\vendor_setup_screen.dart
+  Is wrapped: True, Truncated bytes: 12389
+  Available content length: 1983 chars
+  Last 100 chars of available: 'Ctrl.dispose();\n    super.dispose();\n  }\n\n  Future<void> _pickLogo() async {\n    final picker = Im\r\n'

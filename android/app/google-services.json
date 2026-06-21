@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "473594628887",
+    "project_id": "vanthenda-paalkaran",
+    "storage_bucket": "vanthenda-paalkaran.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:473594628887:android:6c33d88e6a1ebe20820552",
+        "android_client_info": {
+          "package_name": "com.vaishal.vanthendapaalkaran"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDieNPnqp1hJZm5mfBxsOsvj0IJpXjzz9w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

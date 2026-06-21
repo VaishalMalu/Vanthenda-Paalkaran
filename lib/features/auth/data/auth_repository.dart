@@ -1,0 +1,38 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+final authRepositoryProvider = Provider<AuthRepository>((ref) {
+  return AuthRepository();
+});
+
+class AuthRepository {
+  GoTrueClient get _auth => Supabase.instance.client.auth;
+
+  Stream<AuthState> get authStateChanges => _auth.onAuthStateChange;
+
+  User? get currentUser => _auth.currentUser;
+
+  Future<void> signInWithPhone(String phone) async {
+    await _auth.signInWithOtp(phone: phone);
+  }
+
+  Future<void> verifyOtp(String phone, String otp) async {
+    await _auth.verifyOTP(
+      phone: phone,
+      token: otp,
+      type: OtpType.sms,
+    );
+  }
+
+  Future<void> signInWithEmail(String email, String password) async {
+    await _auth.signInWithPassword(email: email, password: password);
+  }
+
+  Future<void> signUp(String email, String password) async {
+    await _auth.signUp(email: email, password: password);
+  }
+
+  Future<void> signOut() async {
+    await _auth.signOut();
+  }
+}
