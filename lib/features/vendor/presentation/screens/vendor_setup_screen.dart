@@ -54,7 +54,7 @@ class _VendorSetupScreenState
 
       String? logoUrl;
       if (_logoBytes != null) {
-        final path = 'vendor-logos/$userId.jpg';
+        final path = '$userId/logo.jpg';
         await SupabaseService.client.storage
             .from('vendor-logos')
             .uploadBinary(path, _logoBytes!,
@@ -66,8 +66,9 @@ class _VendorSetupScreenState
       }
 
       // Create vendor profile
-      await SupabaseService.client.from('vendors').upsert({
-        'id': userId,
+      await SupabaseService.client.from('vendors').insert({
+        'user_id': userId,
+        'owner_name': _businessNameCtrl.text.trim(), // Use business name or hardcode 'Owner' if there's no owner field
         'business_name': _businessNameCtrl.text.trim(),
         'phone': _phoneCtrl.text.trim(),
         'address': _addressCtrl.text.trim(),

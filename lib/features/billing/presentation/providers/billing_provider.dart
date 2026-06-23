@@ -3,12 +3,12 @@ import '../../data/repositories/billing_repository.dart';
 
 final currentMonthBillsProvider =
     FutureProvider<List<BillModel>>((ref) async {
-  return ref.read(billingRepositoryProvider).fetchCurrentMonthBills();
+  return ref.read(billingRepositoryProvider).fetchMonthlyBills();
 });
 
 final totalPendingAmountProvider =
     FutureProvider<double>((ref) async {
-  return ref.read(billingRepositoryProvider).fetchTotalPending();
+  return ref.read(billingRepositoryProvider).getPendingAmount();
 });
 
 class BillingNotifier extends Notifier<AsyncValue<List<BillModel>>> {
@@ -19,7 +19,7 @@ class BillingNotifier extends Notifier<AsyncValue<List<BillModel>>> {
     state = const AsyncLoading();
     try {
       final bills =
-          await ref.read(billingRepositoryProvider).fetchCurrentMonthBills();
+          await ref.read(billingRepositoryProvider).fetchMonthlyBills();
       state = AsyncData(bills);
     } on Exception catch (e) {
       state = AsyncError(e, StackTrace.current);

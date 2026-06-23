@@ -5,6 +5,8 @@ import '../providers/billing_provider.dart';
 import '../../data/repositories/billing_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/premium_card.dart';
+import '../../../../core/widgets/premium_button.dart';
 
 class BillingDashboardScreen extends ConsumerStatefulWidget {
   const BillingDashboardScreen({super.key});
@@ -31,16 +33,24 @@ class _BillingDashboardScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Billing'),
+        title: Text(
+          'Billing',
+          style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+        ),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.autorenew),
-            tooltip: 'Generate Bills',
-            onPressed: () => _confirmGenerate(context),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: PremiumButton(
+              text: 'Generate',
+              isOutlined: true,
+              icon: Icons.autorenew,
+              onPressed: () => _confirmGenerate(context),
+            ),
           ),
         ],
       ),
       body: RefreshIndicator(
+        color: AppColors.primary,
         onRefresh: () async =>
             ref.read(billingNotifierProvider.notifier).loadBills(),
         child: Column(
@@ -49,36 +59,47 @@ class _BillingDashboardScreenState
             pendingAsync.when(
               loading: () => const LinearProgressIndicator(),
               error: (_, __) => const SizedBox.shrink(),
-              data: (pending) => Container(
-                margin: const EdgeInsets.all(16),
+              data: (pending) => Padding(
                 padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.surface,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.border),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Total Pending',
-                              style: AppTypography.textTheme.bodySmall),
-                          Text(
-                            '₹${NumberFormat('#,##0').format(pending)}',
-                            style: AppTypography.textTheme.headlineSmall
-                                ?.copyWith(
-                                    color: AppColors.warning,
-                                    fontWeight: FontWeight.w700),
-                          ),
-                        ],
+                child: PremiumCard(
+                  backgroundColor: AppColors.primary,
+                  hasShadow: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Total Pending Collection',
+                              style: AppTypography.textTheme.bodyMedium?.copyWith(
+                                color: AppColors.surface.withOpacity(0.8),
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              '₹${NumberFormat('#,##0').format(pending)}',
+                              style: AppTypography.textTheme.displayMedium?.copyWith(
+                                color: AppColors.surface,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Icon(Icons.receipt_long_outlined,
-                        size: 36,
-                        color: AppColors.warning.withValues(alpha: 0.5)),
-                  ],
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: Icon(Icons.account_balance_wallet_outlined,
+                            size: 32,
+                            color: AppColors.surface),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -90,17 +111,25 @@ class _BillingDashboardScreenState
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Icon(Icons.error_outline,
-                          size: 48, color: AppColors.error),
-                      const SizedBox(height: 12),
+                      Container(
+                        padding: const EdgeInsets.all(24),
+                        decoration: BoxDecoration(
+                          color: AppColors.error.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.error_outline,
+                            size: 48, color: AppColors.error),
+                      ),
+                      const SizedBox(height: 16),
                       Text('Could not load bills',
-                          style: AppTypography.textTheme.bodyLarge),
-                      const SizedBox(height: 8),
-                      ElevatedButton(
+                          style: AppTypography.textTheme.titleMedium),
+                      const SizedBox(height: 16),
+                      PremiumButton(
+                        text: 'Retry',
+                        isOutlined: true,
                         onPressed: () => ref
                             .read(billingNotifierProvider.notifier)
                             .loadBills(),
-                        child: const Text('Retry'),
                       ),
                     ],
                   ),
@@ -111,27 +140,27 @@ class _BillingDashboardScreenState
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.receipt_outlined,
-                              size: 64, color: AppColors.textTertiary),
+                          Icon(Icons.receipt_long_outlined,
+                              size: 64, color: AppColors.border),
                           const SizedBox(height: 16),
                           Text('No bills this month',
                               style: AppTypography.textTheme.titleMedium
                                   ?.copyWith(
                                       color: AppColors.textSecondary)),
-                          const SizedBox(height: 8),
-                          ElevatedButton(
+                          const SizedBox(height: 24),
+                          PremiumButton(
+                            text: 'Generate Bills',
                             onPressed: () => _confirmGenerate(context),
-                            child: const Text('Generate Bills'),
                           ),
                         ],
                       ),
                     );
                   }
                   return ListView.separated(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
                     itemCount: bills.length,
                     separatorBuilder: (_, __) =>
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                     itemBuilder: (context, i) => _BillCard(
                       bill: bills[i],
                       onPay: () => _showPaymentSheet(context, bills[i]),
@@ -150,16 +179,19 @@ class _BillingDashboardScreenState
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Generate Bills'),
-        content: const Text(
-            'Generate bills for all active customers this month?'),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Generate Bills', style: AppTypography.textTheme.titleLarge),
+        content: Text(
+            'Generate bills for all active customers this month?',
+            style: AppTypography.textTheme.bodyMedium),
         actions: [
           TextButton(
               onPressed: () => Navigator.pop(ctx, false),
               child: const Text('Cancel')),
-          ElevatedButton(
+          PremiumButton(
+              text: 'Generate',
               onPressed: () => Navigator.pop(ctx, true),
-              child: const Text('Generate')),
+          ),
         ],
       ),
     );
@@ -172,9 +204,7 @@ class _BillingDashboardScreenState
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (_) => _PaymentSheet(
         bill: bill,
         onRecord: (method) {
@@ -197,29 +227,36 @@ class _BillCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: bill.isPaid
-              ? AppColors.secondary.withValues(alpha: 0.4)
-              : AppColors.border,
-        ),
-      ),
+    return PremiumCard(
+      padding: const EdgeInsets.all(16),
+      hasShadow: false,
       child: Row(
         children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: bill.isPaid
+                  ? AppColors.secondary.withOpacity(0.1)
+                  : AppColors.warning.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Icon(
+              bill.isPaid ? Icons.check_circle_outline : Icons.receipt_long_outlined,
+              color: bill.isPaid ? AppColors.secondary : AppColors.warning,
+            ),
+          ),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(bill.customerName,
-                    style: AppTypography.textTheme.titleSmall),
+                    style: AppTypography.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
                 Text(
                   '${bill.totalLiters.toStringAsFixed(1)}L · ₹${bill.totalAmount.toStringAsFixed(0)}',
-                  style: AppTypography.textTheme.bodySmall,
+                  style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
                 ),
               ],
             ),
@@ -227,14 +264,14 @@ class _BillCard extends StatelessWidget {
           if (bill.isPaid)
             Container(
               padding: const EdgeInsets.symmetric(
-                  horizontal: 10, vertical: 4),
+                  horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: AppColors.secondary.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.secondary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
               ),
-              child: Text('Paid',
+              child: Text('PAID',
                   style: AppTypography.textTheme.labelSmall
-                      ?.copyWith(color: AppColors.secondary)),
+                      ?.copyWith(color: AppColors.secondary, fontWeight: FontWeight.w700)),
             )
           else
             Column(
@@ -243,16 +280,15 @@ class _BillCard extends StatelessWidget {
                 Text(
                   '₹${bill.amountDue.toStringAsFixed(0)}',
                   style: AppTypography.textTheme.titleMedium?.copyWith(
-                    color: AppColors.warning,
+                    color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                TextButton(
+                const SizedBox(height: 4),
+                PremiumButton(
+                  text: 'Pay Now',
+                  isOutlined: true,
                   onPressed: onPay,
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(60, 28)),
-                  child: const Text('Record Payment'),
                 ),
               ],
             ),
@@ -277,50 +313,84 @@ class _PaymentSheetState extends State<_PaymentSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-        left: 16,
-        right: 16,
-        top: 20,
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Record Payment',
-              style: AppTypography.textTheme.titleLarge),
-          const SizedBox(height: 8),
-          Text(
-            'Customer: ${widget.bill.customerName}\nAmount: ₹${widget.bill.amountDue.toStringAsFixed(0)}',
-            style: AppTypography.textTheme.bodyMedium,
-          ),
-          const SizedBox(height: 16),
-          Text('Payment Method',
-              style: AppTypography.textTheme.titleSmall),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: ['cash', 'upi', 'bank_transfer'].map((m) {
-              return ChoiceChip(
-                label: Text(m.replaceAll('_', ' ').toUpperCase()),
-                selected: _method == m,
-                onSelected: (_) => setState(() => _method = m),
-              );
-            }).toList(),
-          ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          left: 24,
+          right: 24,
+          top: 8,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Center(
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.border,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text('Record Payment',
+                style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+            const SizedBox(height: 8),
+            Text(
+              '${widget.bill.customerName}',
+              style: AppTypography.textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
+            ),
+            const SizedBox(height: 16),
+            PremiumCard(
+              backgroundColor: AppColors.surfaceVariant,
+              hasShadow: false,
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Amount Due', style: AppTypography.textTheme.bodyMedium),
+                  Text('₹${widget.bill.amountDue.toStringAsFixed(0)}', 
+                    style: AppTypography.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700)),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text('Payment Method',
+                style: AppTypography.textTheme.titleSmall?.copyWith(color: AppColors.textSecondary)),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 12,
+              runSpacing: 12,
+              children: ['cash', 'upi', 'bank_transfer'].map((m) {
+                final isSelected = _method == m;
+                return ChoiceChip(
+                  label: Text(m.replaceAll('_', ' ').toUpperCase()),
+                  selected: isSelected,
+                  onSelected: (_) => setState(() => _method = m),
+                  selectedColor: AppColors.primary,
+                  labelStyle: AppTypography.textTheme.labelMedium?.copyWith(
+                    color: isSelected ? AppColors.surface : AppColors.textPrimary,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 32),
+            PremiumButton(
+              text: 'Confirm Payment',
               onPressed: () {
                 widget.onRecord(_method);
                 Navigator.pop(context);
               },
-              child: const Text('Confirm Payment'),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

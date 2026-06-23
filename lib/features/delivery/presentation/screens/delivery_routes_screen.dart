@@ -4,6 +4,8 @@ import '../providers/delivery_provider.dart';
 import '../../data/repositories/delivery_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/premium_card.dart';
+import '../../../../core/widgets/premium_button.dart';
 
 class DeliveryRoutesScreen extends ConsumerStatefulWidget {
   const DeliveryRoutesScreen({super.key});
@@ -32,7 +34,13 @@ class _DeliveryRoutesScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text("Today's Route — $dateStr"),
+        title: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Today's Route", style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+            Text(dateStr, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+          ],
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -49,17 +57,25 @@ class _DeliveryRoutesScreenState
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline,
-                  size: 48, color: AppColors.error),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(Icons.error_outline,
+                    size: 48, color: AppColors.error),
+              ),
+              const SizedBox(height: 16),
               Text('Could not load deliveries',
-                  style: AppTypography.textTheme.bodyLarge),
-              const SizedBox(height: 8),
-              ElevatedButton(
+                  style: AppTypography.textTheme.titleMedium),
+              const SizedBox(height: 16),
+              PremiumButton(
+                text: 'Retry',
+                isOutlined: true,
                 onPressed: () => ref
                     .read(deliveryNotifierProvider.notifier)
                     .loadTodaysDeliveries(),
-                child: const Text('Retry'),
               ),
             ],
           ),
@@ -71,8 +87,7 @@ class _DeliveryRoutesScreenState
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.local_shipping_outlined,
-                      size: 64,
-                      color: AppColors.textTertiary),
+                      size: 64, color: AppColors.border),
                   const SizedBox(height: 16),
                   Text(
                     'No deliveries today',
@@ -90,7 +105,7 @@ class _DeliveryRoutesScreenState
               deliveries.where((d) => d.session == 'evening').toList();
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
             children: [
               if (morning.isNotEmpty) ...[
                 _SessionHeader(
@@ -100,24 +115,24 @@ class _DeliveryRoutesScreenState
                   count: morning.length,
                   delivered: morning.where((d) => d.isDelivered).length,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 ...morning.map((d) => _DeliveryCard(
                       delivery: d,
                       onMarkDelivered: () => ref
                           .read(deliveryNotifierProvider.notifier)
                           .markDelivered(d.id),
                     )),
-                const SizedBox(height: 16),
+                const SizedBox(height: 32),
               ],
               if (evening.isNotEmpty) ...[
                 _SessionHeader(
                   title: 'Evening Session',
                   icon: Icons.nights_stay_outlined,
-                  color: AppColors.info,
+                  color: AppColors.primary,
                   count: evening.length,
                   delivered: evening.where((d) => d.isDelivered).length,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
                 ...evening.map((d) => _DeliveryCard(
                       delivery: d,
                       onMarkDelivered: () => ref
@@ -152,19 +167,27 @@ class _SessionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: color, size: 20),
-        const SizedBox(width: 8),
-        Text(title, style: AppTypography.textTheme.titleMedium),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(icon, color: color, size: 20),
+        ),
+        const SizedBox(width: 12),
+        Text(title, style: AppTypography.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
         const Spacer(),
         Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.12),
-            borderRadius: BorderRadius.circular(12),
+            color: AppColors.surface,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AppColors.borderSubtle),
           ),
           child: Text(
-            '$delivered/$count done',
-            style: AppTypography.textTheme.labelSmall?.copyWith(color: color),
+            '$delivered / $count',
+            style: AppTypography.textTheme.labelMedium?.copyWith(color: AppColors.textPrimary),
           ),
         ),
       ],
@@ -183,68 +206,70 @@ class _DeliveryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: delivery.isDelivered
-              ? AppColors.secondary.withValues(alpha: 0.4)
-              : AppColors.border,
-        ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: delivery.isDelivered
-                  ? AppColors.secondary.withValues(alpha: 0.12)
-                  : AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(
-              delivery.isDelivered
-                  ? Icons.check_circle_outline
-                  : Icons.water_drop_outlined,
-              color: delivery.isDelivered
-                  ? AppColors.secondary
-                  : AppColors.primary,
-              size: 20,
-            ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Customer #${delivery.customerId.substring(0, 8)}',
-                  style: AppTypography.textTheme.titleSmall,
-                ),
-                Text(
-                  '${delivery.quantity}L · ₹${delivery.totalAmount.toStringAsFixed(0)}',
-                  style: AppTypography.textTheme.bodySmall,
-                ),
-              ],
-            ),
-          ),
-          if (!delivery.isDelivered)
-            TextButton(
-              onPressed: onMarkDelivered,
-              child: const Text('Mark Done'),
-            )
-          else
-            Text(
-              'Delivered',
-              style: AppTypography.textTheme.labelSmall?.copyWith(
-                color: AppColors.secondary,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: PremiumCard(
+        padding: const EdgeInsets.all(16),
+        hasShadow: false,
+        backgroundColor: delivery.isDelivered ? AppColors.surfaceVariant : AppColors.surface,
+        child: Row(
+          children: [
+            Container(
+              width: 48,
+              height: 48,
+              decoration: BoxDecoration(
+                color: delivery.isDelivered
+                    ? AppColors.secondary.withOpacity(0.1)
+                    : AppColors.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Icon(
+                delivery.isDelivered
+                    ? Icons.check_circle
+                    : Icons.water_drop_outlined,
+                color: delivery.isDelivered
+                    ? AppColors.secondary
+                    : AppColors.primary,
+                size: 24,
               ),
             ),
-        ],
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Customer #${delivery.customerId.substring(0, 8)}',
+                    style: AppTypography.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      decoration: delivery.isDelivered ? TextDecoration.lineThrough : null,
+                      color: delivery.isDelivered ? AppColors.textSecondary : AppColors.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${delivery.quantity}L · ₹${delivery.totalAmount.toStringAsFixed(0)}',
+                    style: AppTypography.textTheme.bodySmall,
+                  ),
+                ],
+              ),
+            ),
+            if (!delivery.isDelivered)
+              PremiumButton(
+                text: 'Done',
+                isOutlined: true,
+                onPressed: onMarkDelivered,
+              )
+            else
+              Text(
+                'Completed',
+                style: AppTypography.textTheme.labelSmall?.copyWith(
+                  color: AppColors.secondary,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

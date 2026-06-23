@@ -3,6 +3,7 @@ class AppRoutes {
 
   // ── Auth ──
   static const String splash = '/';
+  static const String language = '/language';
   static const String login = '/login';
   static const String setupProfile = '/setup-profile';
 

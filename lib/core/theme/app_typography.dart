@@ -6,79 +6,79 @@ class AppTypography {
   AppTypography._();
 
   static TextTheme get textTheme => TextTheme(
-        displayLarge: GoogleFonts.inter(
+        displayLarge: GoogleFonts.outfit(
           fontSize: 32,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
           letterSpacing: -0.5,
         ),
-        displayMedium: GoogleFonts.inter(
+        displayMedium: GoogleFonts.outfit(
           fontSize: 28,
           fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
           letterSpacing: -0.3,
         ),
-        displaySmall: GoogleFonts.inter(
+        displaySmall: GoogleFonts.outfit(
           fontSize: 24,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        headlineLarge: GoogleFonts.inter(
+        headlineLarge: GoogleFonts.outfit(
           fontSize: 22,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.w700,
           color: AppColors.textPrimary,
         ),
-        headlineMedium: GoogleFonts.inter(
+        headlineMedium: GoogleFonts.outfit(
           fontSize: 20,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        headlineSmall: GoogleFonts.inter(
+        headlineSmall: GoogleFonts.outfit(
           fontSize: 18,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleLarge: GoogleFonts.inter(
+        titleLarge: GoogleFonts.outfit(
           fontSize: 16,
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        titleMedium: GoogleFonts.inter(
+        titleMedium: GoogleFonts.outfit(
           fontSize: 15,
           fontWeight: FontWeight.w500,
           color: AppColors.textPrimary,
         ),
-        titleSmall: GoogleFonts.inter(
+        titleSmall: GoogleFonts.outfit(
           fontSize: 14,
           fontWeight: FontWeight.w500,
           color: AppColors.textSecondary,
         ),
-        bodyLarge: GoogleFonts.inter(
+        bodyLarge: GoogleFonts.outfit(
           fontSize: 16,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
-        bodyMedium: GoogleFonts.inter(
+        bodyMedium: GoogleFonts.outfit(
           fontSize: 14,
           fontWeight: FontWeight.w400,
           color: AppColors.textPrimary,
         ),
-        bodySmall: GoogleFonts.inter(
+        bodySmall: GoogleFonts.outfit(
           fontSize: 12,
           fontWeight: FontWeight.w400,
           color: AppColors.textSecondary,
         ),
-        labelLarge: GoogleFonts.inter(
+        labelLarge: GoogleFonts.outfit(
           fontSize: 14,
           fontWeight: FontWeight.w600,
           color: AppColors.primary,
         ),
-        labelMedium: GoogleFonts.inter(
+        labelMedium: GoogleFonts.outfit(
           fontSize: 12,
           fontWeight: FontWeight.w600,
           color: AppColors.primary,
         ),
-        labelSmall: GoogleFonts.inter(
+        labelSmall: GoogleFonts.outfit(
           fontSize: 11,
           fontWeight: FontWeight.w500,
           color: AppColors.textTertiary,

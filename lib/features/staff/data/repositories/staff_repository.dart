@@ -34,7 +34,6 @@ class StaffModel {
       );
 
   Map<String, dynamic> toJson() => {
-        'vendor_id': vendorId,
         'name': name,
         'phone': phone,
         'role': role,
@@ -50,12 +49,9 @@ class StaffRepository {
   final _client = SupabaseService.client;
 
   Future<List<StaffModel>> fetchStaff() async {
-    final vendorId = SupabaseService.currentUserId;
-    if (vendorId == null) return [];
     final res = await _client
         .from('staff')
         .select()
-        .eq('vendor_id', vendorId)
         .eq('is_active', true)
         .order('name');
     return (res as List).map((e) => StaffModel.fromJson(e)).toList();
@@ -63,10 +59,6 @@ class StaffRepository {
 
   Future<void> createStaff(StaffModel staff) async {
     final staffJson = staff.toJson();
-    final vendorId = SupabaseService.currentUserId;
-    if (vendorId != null) {
-      staffJson['vendor_id'] = vendorId;
-    }
     await _client.from('staff').insert(staffJson);
   }
 

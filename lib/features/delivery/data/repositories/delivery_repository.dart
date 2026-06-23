@@ -43,7 +43,7 @@ class DeliveryModel {
       );
 
   Map<String, dynamic> toJson() => {
-        'vendor_id': vendorId,
+        // 'vendor_id' is omitted, DB handles it via DEFAULT get_vendor_id()
         'customer_id': customerId,
         'milk_type_id': milkTypeId,
         'delivery_date': deliveryDate.toIso8601String().split('T')[0],
@@ -63,13 +63,10 @@ class DeliveryRepository {
   final _client = SupabaseService.client;
 
   Future<List<DeliveryModel>> fetchTodaysDeliveries() async {
-    final vendorId = SupabaseService.currentUserId;
-    if (vendorId == null) return [];
     final today = DateTime.now().toIso8601String().split('T')[0];
     final res = await _client
         .from('deliveries')
         .select()
-        .eq('vendor_id', vendorId)
         .eq('delivery_date', today)
         .order('session');
     return (res as List).map((e) => DeliveryModel.fromJson(e)).toList();
@@ -107,8 +104,6 @@ class DeliveryRepository {
   }
 
   Future<Map<String, dynamic>> fetchDashboardStats() async {
-    final vendorId = SupabaseService.currentUserId;
-    if (vendorId == null) return {};
     final today = DateTime.now().toIso8601String().split('T')[0];
     final firstOfMonth =
         DateTime(DateTime.now().year, DateTime.now().month, 1)
@@ -118,20 +113,17 @@ class DeliveryRepository {
     final todayRes = await _client
         .from('deliveries')
         .select('id')
-        .eq('vendor_id', vendorId)
         .eq('delivery_date', today);
 
     final monthRes = await _client
         .from('deliveries')
         .select('quantity')
-        .eq('vendor_id', vendorId)
         .gte('delivery_date', firstOfMonth);
 
     final pendingRes = await _client
         .from('bills')
-        .select('amount_due')
-        .eq('vendor_id', vendorId)
-        .eq('is_paid', false);
+        .select('pending_amount')
+        .neq('status', 'paid');
 
     double totalQty = 0;
     for (final d in (monthRes as List)) {
@@ -140,7 +132,7 @@ class DeliveryRepository {
 
     double pendingAmount = 0;
     for (final b in (pendingRes as List)) {
-      pendingAmount += (b['amount_due'] as num).toDouble();
+      pendingAmount += (b['pending_amount'] as num).toDouble();
     }
 
     return {

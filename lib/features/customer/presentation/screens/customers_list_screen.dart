@@ -4,6 +4,8 @@ import '../providers/customers_provider.dart';
 import '../../data/repositories/customer_repository.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/premium_card.dart';
+import '../../../../core/widgets/premium_button.dart';
 
 class CustomersListScreen extends ConsumerStatefulWidget {
   const CustomersListScreen({super.key});
@@ -39,27 +41,51 @@ class _CustomersListScreenState
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Customers'),
+        title: Text(
+          'Customers',
+          style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+        ),
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(64),
+          preferredSize: const Size.fromHeight(72),
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-            child: SearchBar(
-              controller: _searchController,
-              hintText: 'Search customers...',
-              leading: const Icon(Icons.search),
-              trailing: _searchQuery.isNotEmpty
-                  ? [
-                      IconButton(
-                        icon: const Icon(Icons.clear),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() => _searchQuery = '');
-                        },
-                      )
-                    ]
-                  : null,
-              onChanged: (q) => setState(() => _searchQuery = q),
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.subtleShadow,
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  )
+                ],
+              ),
+              child: SearchBar(
+                controller: _searchController,
+                hintText: 'Search customers...',
+                elevation: WidgetStateProperty.all(0),
+                backgroundColor: WidgetStateProperty.all(AppColors.surface),
+                shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  side: BorderSide(color: AppColors.borderSubtle),
+                )),
+                leading: const Padding(
+                  padding: EdgeInsets.only(left: 8.0),
+                  child: Icon(Icons.search, color: AppColors.textSecondary),
+                ),
+                trailing: _searchQuery.isNotEmpty
+                    ? [
+                        IconButton(
+                          icon: const Icon(Icons.clear, color: AppColors.textSecondary),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      ]
+                    : null,
+                onChanged: (q) => setState(() => _searchQuery = q),
+                textStyle: WidgetStateProperty.all(AppTypography.textTheme.bodyLarge),
+              ),
             ),
           ),
         ),
@@ -69,23 +95,41 @@ class _CustomersListScreenState
         child: const Icon(Icons.person_add_outlined),
       ),
       body: customersState.when(
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline,
-                  size: 48, color: AppColors.error),
-              const SizedBox(height: 12),
-              Text('Could not load customers',
-                  style: AppTypography.textTheme.bodyLarge),
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  gradient: AppColors.warningGradient,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.warning.withValues(alpha: 0.3),
+                      blurRadius: 20,
+                      offset: const Offset(0, 8),
+                    )
+                  ],
+                ),
+                child: const Icon(Icons.wifi_tethering_error_rounded,
+                    size: 48, color: Colors.white),
+              ),
+              const SizedBox(height: 32),
+              Text('Connection Interrupted',
+                  style: AppTypography.textTheme.headlineSmall),
               const SizedBox(height: 8),
-              ElevatedButton(
+              Text('Unable to sync customers at the moment.',
+                  style: AppTypography.textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  )),
+              const SizedBox(height: 24),
+              PremiumButton(
+                text: 'Try Again',
                 onPressed: () => ref
                     .read(customerNotifierProvider.notifier)
                     .loadCustomers(),
-                child: const Text('Retry'),
               ),
             ],
           ),
@@ -106,23 +150,38 @@ class _CustomersListScreenState
 
           if (filtered.isEmpty) {
             return Center(
-              child: Text(
-                _searchQuery.isEmpty
-                    ? 'No customers yet'
-                    : 'No results for "$_searchQuery"',
-                style: AppTypography.textTheme.bodyMedium
-                    ?.copyWith(color: AppColors.textSecondary),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: AppColors.surfaceVariant,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.person_search_outlined, size: 48, color: AppColors.textTertiary),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    _searchQuery.isEmpty
+                        ? 'No Customers Found'
+                        : 'No results for "$_searchQuery"',
+                    style: AppTypography.textTheme.titleMedium
+                        ?.copyWith(color: AppColors.textSecondary),
+                  ),
+                ],
               ),
             );
           }
 
           return RefreshIndicator(
+            color: AppColors.primary,
             onRefresh: () async =>
                 ref.read(customerNotifierProvider.notifier).loadCustomers(),
             child: ListView.separated(
               padding: const EdgeInsets.all(16),
               itemCount: filtered.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
               itemBuilder: (context, i) =>
                   _CustomerCard(customer: filtered[i]),
             ),
@@ -137,9 +196,7 @@ class _CustomersListScreenState
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      backgroundColor: Colors.transparent,
       builder: (_) => _AddCustomerSheet(
         onAdd: (customer) {
           ref.read(customerNotifierProvider.notifier).addCustomer(customer);
@@ -156,49 +213,83 @@ class _CustomerCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
+    return PremiumCard(
+      padding: const EdgeInsets.all(16),
+      hasShadow: false,
       child: Row(
         children: [
-          CircleAvatar(
-            backgroundColor:
-                AppColors.primary.withValues(alpha: 0.12),
-            child: Text(
-              customer.name.isNotEmpty
-                  ? customer.name[0].toUpperCase()
-                  : '?',
-              style: TextStyle(
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: AppColors.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Center(
+              child: Text(
+                customer.name.isNotEmpty
+                    ? customer.name[0].toUpperCase()
+                    : '?',
+                style: AppTypography.textTheme.titleLarge?.copyWith(
                   color: AppColors.primary,
-                  fontWeight: FontWeight.w600),
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(customer.name,
-                    style: AppTypography.textTheme.titleSmall),
-                const SizedBox(height: 2),
                 Text(
-                  '${customer.phone} · ${customer.area}',
-                  style: AppTypography.textTheme.bodySmall,
+                  customer.name,
+                  style: AppTypography.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  'Morning: ${customer.defaultMorningQty}L  Evening: ${customer.defaultEveningQty}L',
-                  style: AppTypography.textTheme.bodySmall?.copyWith(
-                    color: AppColors.primary,
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    Icon(Icons.phone_outlined, size: 14, color: AppColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Text(
+                      customer.phone,
+                      style: AppTypography.textTheme.bodySmall,
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(Icons.location_on_outlined, size: 14, color: AppColors.textSecondary),
+                    const SizedBox(width: 4),
+                    Text(
+                      customer.area,
+                      style: AppTypography.textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.surfaceVariant,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.wb_sunny_outlined, size: 12, color: AppColors.warning),
+                      const SizedBox(width: 4),
+                      Text('${customer.defaultMorningQty}L', style: AppTypography.textTheme.labelSmall),
+                      const SizedBox(width: 12),
+                      Icon(Icons.nights_stay_outlined, size: 12, color: AppColors.primaryLight),
+                      const SizedBox(width: 4),
+                      Text('${customer.defaultEveningQty}L', style: AppTypography.textTheme.labelSmall),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
+          const Icon(Icons.chevron_right, color: AppColors.textTertiary),
         ],
       ),
     );
@@ -234,78 +325,118 @@ class _AddCustomerSheetState extends State<_AddCustomerSheet> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-        left: 16,
-        right: 16,
-        top: 20,
+    return Container(
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Add Customer',
-                style: AppTypography.textTheme.titleLarge),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _nameCtrl,
-              decoration:
-                  const InputDecoration(labelText: 'Full Name'),
-              validator: (v) =>
-                  v == null || v.isEmpty ? 'Required' : null,
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _phoneCtrl,
-              keyboardType: TextInputType.phone,
-              decoration:
-                  const InputDecoration(labelText: 'Phone'),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _areaCtrl,
-              decoration:
-                  const InputDecoration(labelText: 'Area'),
-            ),
-            const SizedBox(height: 12),
-            TextFormField(
-              controller: _addressCtrl,
-              decoration:
-                  const InputDecoration(labelText: 'Address'),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    initialValue: _morningQty.toString(),
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        labelText: 'Morning (L)'),
-                    onChanged: (v) =>
-                        _morningQty = double.tryParse(v) ?? 0.5,
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 24,
+          left: 24,
+          right: 24,
+          top: 8,
+        ),
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: TextFormField(
-                    initialValue: _eveningQty.toString(),
-                    keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(
-                        labelText: 'Evening (L)'),
-                    onChanged: (v) =>
-                        _eveningQty = double.tryParse(v) ?? 0.5,
-                  ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'Add Customer',
+                style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const SizedBox(height: 24),
+              TextFormField(
+                controller: _nameCtrl,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Full Name',
+                  prefixIcon: Icon(Icons.person_outline),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
+                validator: (v) =>
+                    v == null || v.isEmpty ? 'Required' : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _phoneCtrl,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Phone',
+                  prefixIcon: Icon(Icons.phone_outlined),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      controller: _areaCtrl,
+                      textInputAction: TextInputAction.next,
+                      decoration: const InputDecoration(
+                        labelText: 'Area / Zone',
+                        prefixIcon: Icon(Icons.map_outlined),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _addressCtrl,
+                textInputAction: TextInputAction.next,
+                decoration: const InputDecoration(
+                  labelText: 'Full Address',
+                  prefixIcon: Icon(Icons.home_outlined),
+                ),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _morningQty.toString(),
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Morning (L)',
+                        prefixIcon: Icon(Icons.wb_sunny_outlined),
+                      ),
+                      onChanged: (v) =>
+                          _morningQty = double.tryParse(v) ?? 0.5,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: TextFormField(
+                      initialValue: _eveningQty.toString(),
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Evening (L)',
+                        prefixIcon: Icon(Icons.nights_stay_outlined),
+                      ),
+                      onChanged: (v) =>
+                          _eveningQty = double.tryParse(v) ?? 0.5,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+              PremiumButton(
+                text: 'Save Customer',
                 onPressed: () {
                   if (!_formKey.currentState!.validate()) return;
                   final customer = CustomerModel(
@@ -324,10 +455,9 @@ class _AddCustomerSheetState extends State<_AddCustomerSheet> {
                   widget.onAdd(customer);
                   Navigator.pop(context);
                 },
-                child: const Text('Add Customer'),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

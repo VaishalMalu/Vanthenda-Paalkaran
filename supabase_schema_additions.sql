@@ -98,3 +98,64 @@ BEGIN
   END LOOP;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
+
+
+-- ============================================================
+-- ADDITIONS TO FIX RECENT ERRORS (RUN THESE)
+-- ============================================================
+
+-- 1. Vendors RLS Policies (Allow inserting/updating own profile)
+ALTER TABLE public.vendors ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "Vendors can insert own profile" ON public.vendors;
+CREATE POLICY "Vendors can insert own profile" ON public.vendors
+    FOR INSERT WITH CHECK (user_id = auth.uid());
+
+DROP POLICY IF EXISTS "Vendors can update own profile" ON public.vendors;
+CREATE POLICY "Vendors can update own profile" ON public.vendors
+    FOR UPDATE USING (user_id = auth.uid());
+
+-- 2. User Roles RPC
+CREATE OR REPLACE FUNCTION set_user_role(p_role TEXT)
+RETURNS void AS $$
+BEGIN
+  UPDATE auth.users SET raw_user_meta_data = 
+    COALESCE(raw_user_meta_data, '{}'::jsonb) || jsonb_build_object('role', p_role)
+  WHERE id = auth.uid();
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+CREATE OR REPLACE FUNCTION get_user_role()
+RETURNS TEXT AS $$
+DECLARE
+  v_role TEXT;
+BEGIN
+  SELECT raw_user_meta_data->>'role' INTO v_role
+  FROM auth.users
+  WHERE id = auth.uid();
+  RETURN COALESCE(v_role, 'customer');
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 3. Storage Bucket 'vendor-logos' (Must run as superuser)
+insert into storage.buckets (id, name, public) values ('vendor-logos', 'vendor-logos', true)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Vendors can upload own logo" ON storage.objects;
+CREATE POLICY "Vendors can upload own logo" ON storage.objects 
+    FOR INSERT WITH CHECK (bucket_id = 'vendor-logos' AND auth.uid()::text = (storage.foldername(name))[1]);
+
+DROP POLICY IF EXISTS "Logos are public" ON storage.objects;
+CREATE POLICY "Logos are public" ON storage.objects 
+    FOR SELECT USING (bucket_id = 'vendor-logos');
+
+
+-- ============================================================
+-- FIX VENDOR_ID INSERTS & FOREIGN KEYS
+-- ============================================================
+ALTER TABLE public.customers ALTER COLUMN vendor_id SET DEFAULT get_vendor_id();
+ALTER TABLE public.milk_types ALTER COLUMN vendor_id SET DEFAULT get_vendor_id();
+ALTER TABLE public.deliveries ALTER COLUMN vendor_id SET DEFAULT get_vendor_id();
+ALTER TABLE public.payments ALTER COLUMN vendor_id SET DEFAULT get_vendor_id();
+ALTER TABLE public.vendor_settings ALTER COLUMN vendor_id SET DEFAULT get_vendor_id();
+ALTER TABLE public.bills ALTER COLUMN vendor_id SET DEFAULT get_vendor_id();

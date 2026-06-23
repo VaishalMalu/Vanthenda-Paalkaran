@@ -29,7 +29,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       final route = await AuthNotifier.routeForRole();
       if (mounted) context.go(route);
     } else {
-      if (mounted) context.go(AppRoutes.login);
+      if (mounted) context.go(AppRoutes.language);
     }
   }
 

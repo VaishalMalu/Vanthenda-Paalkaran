@@ -46,6 +46,15 @@ class BillModel {
             ? DateTime.parse(json['paid_at'] as String)
             : null,
       );
+
+  Map<String, dynamic> toJson() => {
+        'customer_id': customerId,
+        'customer_name': customerName,
+        'billing_month': billingMonth,
+        'billing_year': billingYear,
+        'amount_due': amountDue,
+        'is_paid': isPaid,
+      };
 }
 
 final billingRepositoryProvider =
@@ -54,14 +63,11 @@ final billingRepositoryProvider =
 class BillingRepository {
   final _client = SupabaseService.client;
 
-  Future<List<BillModel>> fetchCurrentMonthBills() async {
-    final vendorId = SupabaseService.currentUserId;
-    if (vendorId == null) return [];
+  Future<List<BillModel>> fetchMonthlyBills() async {
     final now = DateTime.now();
     final res = await _client
         .from('bills')
         .select()
-        .eq('vendor_id', vendorId)
         .eq('billing_month', now.month)
         .eq('billing_year', now.year)
         .order('customer_name');
@@ -78,17 +84,14 @@ class BillingRepository {
     return (res as List).map((e) => BillModel.fromJson(e)).toList();
   }
 
-  Future<double> fetchTotalPending() async {
-    final vendorId = SupabaseService.currentUserId;
-    if (vendorId == null) return 0;
+  Future<double> getPendingAmount() async {
     final res = await _client
         .from('bills')
-        .select('amount_due')
-        .eq('vendor_id', vendorId)
+        .select('pending_amount')
         .eq('is_paid', false);
     double total = 0;
     for (final b in (res as List)) {
-      total += (b['amount_due'] as num).toDouble();
+      total += (b['pending_amount'] as num?)?.toDouble() ?? 0.0;
     }
     return total;
   }
@@ -98,6 +101,10 @@ class BillingRepository {
     if (vendorId == null) return;
     await _client.rpc('generate_monthly_bills',
         params: {'p_vendor_id': vendorId});
+  }
+
+  Future<void> markAsPaid(String billId) async {
+    await _client.from('bills').update({'is_paid': true}).eq('id', billId);
   }
 
   Future<void> recordPayment({

@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lucide_icons_flutter/lucide_icons.dart';
+import '../../../../core/localization/app_localizations.dart';
+import '../../../../core/localization/localization_provider.dart';
 import '../../../../core/routing/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/premium_card.dart';
 import '../providers/dashboard_provider.dart';
 import '../widgets/stat_card.dart';
 
@@ -35,17 +39,18 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
     }
   }
 
-  String _timeOfDay() {
+  String _timeOfDay(String langCode) {
     final hour = DateTime.now().hour;
-    if (hour < 12) return 'Morning';
-    if (hour < 17) return 'Afternoon';
-    return 'Evening';
+    if (hour < 12) return AppLocalizations.tr(langCode, 'morning');
+    if (hour < 17) return AppLocalizations.tr(langCode, 'afternoon');
+    return AppLocalizations.tr(langCode, 'evening');
   }
 
   @override
   Widget build(BuildContext context) {
     final statsAsync = ref.watch(dashboardStatsProvider);
     final customerCountAsync = ref.watch(activeCustomerCountProvider);
+    final langCode = ref.watch(languageProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -59,11 +64,12 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
           child: CustomScrollView(
             slivers: [
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                 sliver: SliverToBoxAdapter(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Header Section
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -71,63 +77,81 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'Good ${_timeOfDay()}!',
+                                _timeOfDay(langCode),
                                 style: AppTypography.textTheme.bodyMedium?.copyWith(
                                   color: AppColors.textSecondary,
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
+                              const SizedBox(height: 4),
                               Text(
                                 'Vanthenda Paalkaran',
-                                style: AppTypography.textTheme.headlineMedium,
+                                style: AppTypography.textTheme.headlineMedium?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  letterSpacing: -0.5,
+                                ),
                               ),
                             ],
                           ),
-                          IconButton(
-                            onPressed: () => context.go(AppRoutes.settings),
-                            icon: const Icon(Icons.settings_outlined),
-                            style: IconButton.styleFrom(
-                              backgroundColor: AppColors.surface,
-                              side: const BorderSide(color: AppColors.border),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: AppColors.surface,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: AppColors.subtleShadow,
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
+                              border: Border.all(color: AppColors.borderSubtle),
+                            ),
+                            child: IconButton(
+                              onPressed: () => context.go(AppRoutes.settings),
+                              icon: const Icon(Icons.settings_outlined, color: AppColors.textPrimary),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 32),
+                      
                       // Stats grid
                       statsAsync.when(
                         loading: () => const Center(child: CircularProgressIndicator()),
-                        error: (e, _) => Text(
-                          'Could not load stats',
-                          style: AppTypography.textTheme.bodyMedium?.copyWith(
-                            color: AppColors.error,
+                        error: (e, _) => PremiumCard(
+                          child: Text(
+                            'Could not load stats',
+                            style: AppTypography.textTheme.bodyMedium?.copyWith(
+                              color: AppColors.error,
+                            ),
                           ),
                         ),
                         data: (stats) => GridView.count(
                           crossAxisCount: 2,
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
-                          crossAxisSpacing: 12,
-                          mainAxisSpacing: 12,
-                          childAspectRatio: 1.2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 1.3,
                           children: [
                             customerCountAsync.when(
-                              loading: () => StatCard(
+                              loading: () => const StatCard(
                                 label: 'Customers',
                                 value: '...',
-                                icon: Icons.people_outlined,
-                                color: AppColors.primary,
+                                icon: Icons.people_outline,
+                                color: AppColors.accent,
                               ),
-                              error: (_, __) => StatCard(
+                              error: (_, __) => const StatCard(
                                 label: 'Customers',
                                 value: '—',
-                                icon: Icons.people_outlined,
-                                color: AppColors.primary,
+                                icon: Icons.people_outline,
+                                color: AppColors.accent,
                               ),
                               data: (count) => StatCard(
                                 label: 'Customers',
                                 value: '$count',
-                                icon: Icons.people_outlined,
-                                color: AppColors.primary,
+                                icon: Icons.people_outline,
+                                color: AppColors.accent,
                               ),
                             ),
                             StatCard(
@@ -139,29 +163,36 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                             StatCard(
                               label: 'Pending Bills',
                               value: '₹${stats['pending_amount'] ?? 0}',
-                              icon: Icons.receipt_outlined,
+                              icon: Icons.receipt_long_outlined,
                               color: AppColors.warning,
                             ),
                             StatCard(
                               label: 'This Month',
                               value: '${stats['month_count'] ?? 0}L',
                               icon: Icons.water_drop_outlined,
-                              color: AppColors.info,
+                              color: AppColors.primary,
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
-                      Text('Quick Actions', style: AppTypography.textTheme.titleLarge),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 40),
+                      
+                      // Quick Actions
+                      Text(
+                        'Quick Actions',
+                        style: AppTypography.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
                       Wrap(
-                        spacing: 10,
-                        runSpacing: 10,
+                        spacing: 12,
+                        runSpacing: 12,
                         children: [
                           _QuickAction(
                             icon: Icons.local_shipping_outlined,
                             label: "Today's Route",
-                            color: AppColors.primary,
+                            color: AppColors.accent,
                             onTap: () => context.go(AppRoutes.delivery),
                           ),
                           _QuickAction(
@@ -179,7 +210,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
                           _QuickAction(
                             icon: Icons.credit_card_outlined,
                             label: 'Milk Card',
-                            color: AppColors.info,
+                            color: AppColors.primary,
                             onTap: () => context.go(AppRoutes.milkCard),
                           ),
                           _QuickAction(
@@ -226,7 +257,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
             label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people_outlined),
+            icon: Icon(Icons.people_outline),
             activeIcon: Icon(Icons.people),
             label: 'Customers',
           ),
@@ -253,6 +284,7 @@ class _QuickAction extends StatelessWidget {
   final VoidCallback onTap;
 
   const _QuickAction({
+    super.key,
     required this.icon,
     required this.label,
     required this.color,
@@ -263,31 +295,52 @@ class _QuickAction extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Container(
-        width: (MediaQuery.of(context).size.width - 64) / 3,
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+        width: (MediaQuery.of(context).size.width - 72) / 3, // Accounts for padding and spacing
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
         decoration: BoxDecoration(
           color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColors.borderSubtle),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.subtleShadow,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            )
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 40,
-              height: 40,
+              width: 48,
+              height: 48,
               decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(10),
+                gradient: LinearGradient(
+                  colors: [
+                    color.withValues(alpha: 0.15),
+                    color.withValues(alpha: 0.05),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: color.withValues(alpha: 0.2),
+                  width: 1,
+                ),
               ),
-              child: Icon(icon, color: color, size: 20),
+              child: Icon(icon, color: color, size: 24),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 12),
             Text(
               label,
-              style: AppTypography.textTheme.labelSmall,
+              style: AppTypography.textTheme.labelSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
